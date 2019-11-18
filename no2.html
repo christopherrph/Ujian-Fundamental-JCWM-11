@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Madding</title>
+</head>
+<script>
+class orang{
+            constructor(username,password,role){
+                this.username = username;
+                this.password = password;
+                this.role = role;
+            }
+        }
+var user = [
+new orang('admin123','asdasd','admin'),
+new orang('user123','asdasd','user'),
+new orang('Spongebob','akusiap','user'),
+new orang('Krab','uang3x','admin')
+]
+
+class kegiatan{
+            constructor(kegiatan,hari,poster){
+                this.kegiatan = kegiatan;
+                this.hari = hari;
+                this.poster = poster;
+            }
+        }
+var aktivitas = [
+new kegiatan('Bernyanyi','Senin','https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/spongebob-1549242953.jpg?crop=0.5609007164790174xw:1xh;center,top&resize=480:*'),
+new kegiatan('Berpesta','Sabtu','https://i1.sndcdn.com/artworks-000052275799-58j8zl-t500x500.jpg')
+]
+
+function findWithAttr(array, attr, value) {
+            for(var i = 0; i < array.length; i += 1) {
+                if(array[i][attr] === value) {
+                    return i;
+                }
+            }
+            return -1;
+}
+
+function logout(){
+    document.getElementById("isi").innerHTML = '';
+    document.getElementById("notiflogin").innerHTML = '';
+    document.getElementById("login").innerHTML =  `<input type="button" value="Login" onclick="login()">`
+    document.getElementById("username").value = '';
+    document.getElementById("pass").value = '';
+}
+
+function login(){
+    var loginname    = document.getElementById('username').value
+    var loginpass    = document.getElementById('pass').value
+    console.log(user)
+    var idxname     = findWithAttr(user,'username',loginname)
+    console.log(idxname)
+    if(idxname == -1){
+        document.getElementById("notiflogin").innerHTML = 'Username / Password Anda Salah';
+    }else{
+        if(user[idxname].password == loginpass){
+        var tipe = user[idxname].role;
+        console.log(tipe)
+        if(tipe == 'admin'){
+            document.getElementById("notiflogin").innerHTML = `Selamat Datang ${loginname}`;
+            document.getElementById("login").innerHTML =  `<input type="button" value="Logout" onclick="logout()">`
+            TabelAdmin();
+        }
+        else if(tipe == 'user'){
+            document.getElementById("notiflogin").innerHTML = `Selamat Datang ${loginname}`;
+            document.getElementById("login").innerHTML =  `<input type="button" value="Logout" onclick="logout()">`
+            TabelUser();
+        }else{
+            document.getElementById("notiflogin").innerHTML = 'Username / Password Anda Salah';
+        }
+    }else{
+        document.getElementById("notiflogin").innerHTML = 'Username / Password Anda Salah';
+    }
+
+    }
+}
+
+function TabelAdmin(){
+    var output = ''
+    for(var i=0; i<aktivitas.length; i++){
+        output +=`
+        <tr id="${i}">
+            <td>${i+1}</td>
+            <td>${aktivitas[i].kegiatan}</td>
+            <td>${aktivitas[i].hari}</td>
+            <td><img src="${aktivitas[i].poster}" height="90px" alt="Gambar Tidak Ditemukan"></td>
+            <td><input type="button" value="Edit" onClick="Edit(${i})">  <input type="button" value="Delete" onClick="Delete(${i})"></td>
+        </tr>
+        `
+    }
+    output += `
+        <tr>
+            <td>${aktivitas.length+1}</td>
+            <td><input type="text" id="kegiatanbaru" placeholder="Masukkan Kegiatan.."></td>
+            <td>
+                <select id="haribaru" style="width: 150px;">
+                    <option value="" disabled selected>Pilih Hari..</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                    <option value="Minggu">Minggu</option>
+                </select>    
+            </td>
+            <td><input type="text" id="posterbaru" placeholder="Masukkan URL Poster.."></td>
+            <td><input type="button" value="Add ToDo" onClick="Add()" ></td>
+        </tr>
+        `
+    document.getElementById("isi").innerHTML = output;
+}
+
+function TabelUser(){
+    var output = ''
+    for(var i=0; i<aktivitas.length; i++){
+        output +=`
+        <tr id="${i}">
+            <td>${i+1}</td>
+            <td>${aktivitas[i].kegiatan}</td>
+            <td>${aktivitas[i].hari}</td>
+            <td><img src="${aktivitas[i].poster}" height="90px" alt="Gambar Tidak Ditemukan"></td>
+            <td></td>
+        </tr>
+        `
+    }
+    document.getElementById("isi").innerHTML = output;
+}
+
+function Add(){
+var kegiatanbaru    = document.getElementById('kegiatanbaru').value
+var haribaru   = document.getElementById('haribaru').value
+var posterbaru   = document.getElementById('posterbaru').value
+if(kegiatanbaru == '' || haribaru == '' || posterbaru == ''){
+    alert('Tolong Lengkapi Form!') 
+}else{
+    aktivitas.push(new kegiatan(kegiatanbaru,haribaru,posterbaru))
+    alert('Berhasil!')
+    TabelAdmin()
+}
+}
+
+function Delete(idx){
+    TabelAdmin()
+    console.log(idx)
+    var output ='';
+    output += `
+        <tr>
+            <td>${idx+1}</td>
+            <td>${aktivitas[idx].kegiatan}</td>
+            <td>${aktivitas[idx].hari}</td>
+            <td><img src="${aktivitas[idx].poster}" height="90px" alt="Gambar Tidak Ditemukan"></td>
+            <td><input type="button" value="No" onClick="TabelAdmin()"> <input type="button" value="Yes" onClick="Hapus(${idx})"></td>
+        </tr>
+        `
+    document.getElementById(idx).innerHTML = output;
+}
+
+function Hapus(idx){
+    aktivitas.splice(idx,1)
+    TabelAdmin()
+}
+
+function Edit(idx){
+    TabelAdmin()
+    console.log(idx)
+    var output ='';
+    output += `
+        <tr>
+            <td>${idx+1}</td>
+            <td><input type="text" id="editkegiatan" value="${aktivitas[idx].kegiatan}"></td>
+            <td>
+                <select id="edithari" style="width: 150px;">
+                    <option value="${aktivitas[idx].hari}" disabled selected>${aktivitas[idx].hari}</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                    <option value="Minggu">Minggu</option>
+                </select>  
+            </td>
+            <td><input type="text" id="editposter" value="${aktivitas[idx].poster}"></td>
+            <td><input type="button" value="Cancel" onClick="TabelAdmin()"> <input type="button" value="Edit" onClick="Ganti(${idx})"></td>
+        </tr>
+        `
+    document.getElementById(idx).innerHTML = output;
+}
+
+function Ganti(idx){
+    var kegiatanbaru    = document.getElementById('editkegiatan').value
+    var haribaru        = document.getElementById('edithari').value
+    var posterbaru      = document.getElementById('editposter').value
+    if(kegiatanbaru == '' || haribaru == '' || posterbaru == ''){
+        alert('Tolong Lengkapi Form!') 
+    }else{
+        aktivitas[idx].kegiatan = kegiatanbaru;
+        aktivitas[idx].hari     = haribaru;
+        aktivitas[idx].poster   = posterbaru;
+        alert('Berhasil!')
+        TabelAdmin()
+    }
+}
+
+
+</script>
+<style>
+        .extable {
+                    border-collapse: collapse;
+                    text-align: center;
+                }
+                .extable th, .extable tr, .extable td{
+                    border: 1px solid black;
+                    padding: 10px;
+                }
+    </style>
+<body style="font-family: Arial, Helvetica, sans-serif; background-color:lightblue;">
+    <center>
+        <img src="https://cdn0.iconfinder.com/data/icons/geek-zone/110/Spongebob-512.png" style="height: 120px;">
+        <h1>MADDING</h1>
+                <form>
+                <table>
+                    <tr style="height: 50px;">
+                        <td style="width: 250px;">Username: <input type="text" id="username"></td>
+                        <td>Password: <input type="password" id="pass"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;"><div id="login"><input type="button" value="Login" onclick="login()"></div></td>
+                    </tr>
+                </table>
+                </form>
+        <br>
+        <b id="notiflogin"></b>
+        <br>
+        <br>
+        <table class="extable">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">No.</th>
+                        <th style="width: 200px;">Kegiatan</th>
+                        <th style="width: 200px;">Hari</th>
+                        <th style="width: 200px;">Poster</th>
+                        <th style="width: 200px;">Act</th>
+                    </tr>
+                </thead>
+                <tbody id="isi">
+                </tbody>
+            </table>
+    </center>
+</body>
+</html>
